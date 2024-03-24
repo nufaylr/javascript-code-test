@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "`BookSearchApiClient` http API to retrieve a list of books and return them.",
   "source": "src/index.ts",
-  "main": "index.js",
+  "main": "src/BookSearchApiClient/index.js",
   "scripts": {
     "build": "tsc",
     "lint": "eslint . --ext .ts,.js",
