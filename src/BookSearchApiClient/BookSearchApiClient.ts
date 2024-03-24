@@ -32,15 +32,16 @@ function createBookSearchApiClient(
       const validatedData = validateData<BookType>(data);
       return validatedData;
     } catch (error) {
-      console.error("Error fetching books:", error);
-      return [];
+      throw new Error(`Error fetching books: ${error}`);
     }
   }
 
   function validateData<BookType>(data: BookType[]): BookType[] {
     const validationResult = schema.array().safeParse(data);
     if (!validationResult.success) {
-      throw new Error(`Schema validation failed: ${validationResult.error}`);
+      throw new Error(
+        `Schema validation failed with ${validationResult.error}`
+      );
     }
     return data;
   }

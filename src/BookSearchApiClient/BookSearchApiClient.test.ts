@@ -31,36 +31,6 @@ describe("BookSearchApiClient", () => {
     expect(mockedAxios.get).toHaveBeenCalledWith(authorSearchQuery);
   });
 
-  it("returns empty array when request fails", async () => {
-    const createBookInstance = createBookSearchApiClient(
-      bookAuthorSchema,
-      mockedAxios
-    );
-
-    mockedAxios.get.mockRejectedValueOnce(new Error("Network error"));
-    const result = await createBookInstance.getBooksByAuthor("no-query");
-
-    expect(result).toEqual([]);
-  });
-
-  it("should correctly adapt a xml response", () => {
-    const xmlResponseAdapter = new XmlResponseAdapter<Book>();
-    const mockResponse: AxiosResponse<Book> = {
-      data: "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>",
-      status: 200,
-      statusText: "OK",
-      headers: {} as AxiosHeaders,
-      config: {
-        headers: {} as AxiosHeaders,
-      },
-    };
-    const adaptedData = xmlResponseAdapter.adapt(mockResponse);
-
-    expect(adaptedData).toEqual(
-      "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"
-    );
-  });
-
   it("throws error when schema validation fails", async () => {
     const authorSearchQuery = `/any-endpoint`;
     const createBookInstance = createBookSearchApiClient(
@@ -75,7 +45,30 @@ describe("BookSearchApiClient", () => {
       data: mockReturnWithInvalidSchema,
     });
 
-    const result = await createBookInstance.getBooksByAuthor(authorSearchQuery);
-    expect(result).toEqual([]);
+    await expect(
+      createBookInstance.getBooksByAuthor(authorSearchQuery)
+    ).rejects.toThrow(
+      "Error fetching books: Error: Schema validation failed with"
+    );
+  });
+
+  describe("Response Adapter", () => {
+    it("should correctly adapt a xml response", () => {
+      const xmlResponseAdapter = new XmlResponseAdapter<Book>();
+      const mockResponse: AxiosResponse<Book> = {
+        data: "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>",
+        status: 200,
+        statusText: "OK",
+        headers: {} as AxiosHeaders,
+        config: {
+          headers: {} as AxiosHeaders,
+        },
+      };
+      const adaptedData = xmlResponseAdapter.adapt(mockResponse);
+
+      expect(adaptedData).toEqual(
+        "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"
+      );
+    });
   });
 });
