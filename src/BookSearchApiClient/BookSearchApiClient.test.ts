@@ -54,7 +54,7 @@ describe("BookSearchApiClient", () => {
 
   describe("Response Adapter", () => {
     it("should correctly adapt a xml response", () => {
-      const xmlResponseAdapter = new XmlResponseAdapter<Book>();
+      const xmlResponseAdapter = new XmlResponseAdapter();
       const mockResponse: AxiosResponse<Book> = {
         data: "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>",
         status: 200,
@@ -64,7 +64,7 @@ describe("BookSearchApiClient", () => {
           headers: {} as AxiosHeaders,
         },
       };
-      const adaptedData = xmlResponseAdapter.adapt(mockResponse);
+      const adaptedData = xmlResponseAdapter.adapt<Book>(mockResponse);
 
       expect(adaptedData).toEqual(
         "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"

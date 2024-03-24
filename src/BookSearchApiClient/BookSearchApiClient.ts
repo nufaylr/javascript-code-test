@@ -10,8 +10,7 @@ import { ApiResponseAdapter } from "./ApiResponseAdapter";
 function createBookSearchApiClient(
   schema: ZodSchema,
   axiosInstance: AxiosInstance,
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  responseAdapter?: ApiResponseAdapter<any>
+  responseAdapter?: ApiResponseAdapter
 ) {
   async function getBooksByAuthor<BookAuthorType>(
     searchQuery: string
