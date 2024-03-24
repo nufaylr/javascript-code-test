@@ -2,6 +2,8 @@ import axios, { type AxiosResponse, type AxiosHeaders } from "axios";
 import { ZodSchema, z } from "zod";
 
 import { createBookSearchApiClient } from "./BookSearchApiClient";
+import { XmlResponseAdapter } from "./ApiResponseAdapter";
+
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 const bookAuthorSchema: ZodSchema<unknown> = z.object({
@@ -28,6 +30,7 @@ describe("BookSearchApiClient", () => {
     expect(result).toEqual(mockReturnbooks);
     expect(mockedAxios.get).toHaveBeenCalledWith(authorSearchQuery);
   });
+
   it("returns empty array when request fails", async () => {
     const createBookInstance = createBookSearchApiClient(
       bookAuthorSchema,
@@ -39,6 +42,25 @@ describe("BookSearchApiClient", () => {
 
     expect(result).toEqual([]);
   });
+
+  it("should correctly adapt a xml response", () => {
+    const xmlResponseAdapter = new XmlResponseAdapter<Book>();
+    const mockResponse: AxiosResponse<Book> = {
+      data: "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>",
+      status: 200,
+      statusText: "OK",
+      headers: {} as AxiosHeaders,
+      config: {
+        headers: {} as AxiosHeaders,
+      },
+    };
+    const adaptedData = xmlResponseAdapter.adapt(mockResponse);
+
+    expect(adaptedData).toEqual(
+      "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"
+    );
+  });
+
   it("throws error when schema validation fails", async () => {
     const authorSearchQuery = `/any-endpoint`;
     const createBookInstance = createBookSearchApiClient(

@@ -10,6 +10,8 @@ import { ApiResponseAdapter } from "./ApiResponseAdapter";
 function createBookSearchApiClient(
   schema: ZodSchema,
   axiosInstance: AxiosInstance,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  responseAdapter?: ApiResponseAdapter<any>
 ) {
   async function getBooksByAuthor<BookAuthorType>(
     searchQuery: string
@@ -23,6 +25,10 @@ function createBookSearchApiClient(
         endpoint
       );
       let data = response.data;
+
+      if (responseAdapter instanceof ApiResponseAdapter) {
+        data = responseAdapter.adapt(response);
+      }
       const validatedData = validateData<BookType>(data);
       return validatedData;
     } catch (error) {
