@@ -1,4 +1,4 @@
-import { ApiResponseAdapter, XmlResponseAdapter } from "./ApiResponseAdapter";
+import { ApiResponseAdapter } from "./ApiResponseAdapter";
 import { createBookSearchApiClient } from "./BookSearchApiClient";
 
-export { ApiResponseAdapter, XmlResponseAdapter, createBookSearchApiClient };
+export { ApiResponseAdapter, createBookSearchApiClient };

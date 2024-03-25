@@ -2,14 +2,16 @@ import axios, { type AxiosResponse, type AxiosHeaders } from "axios";
 import { ZodSchema, z } from "zod";
 
 import { createBookSearchApiClient } from "./BookSearchApiClient";
-import { XmlResponseAdapter } from "./ApiResponseAdapter";
+import { ApiResponseAdapter } from "./ApiResponseAdapter";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
-const bookAuthorSchema: ZodSchema<unknown> = z.object({
-  title: z.string(),
-  author: z.string(),
-});
+const bookAuthorSchema: ZodSchema<unknown> = z.array(
+  z.object({
+    title: z.string(),
+    author: z.string(),
+  })
+);
 type Book = z.infer<typeof bookAuthorSchema>;
 
 describe("BookSearchApiClient", () => {
@@ -54,7 +56,13 @@ describe("BookSearchApiClient", () => {
 
   describe("Response Adapter", () => {
     it("should correctly adapt a xml response", () => {
-      const xmlResponseAdapter = new XmlResponseAdapter();
+      class TestXmlResponseAdapter extends ApiResponseAdapter {
+        adapt<T>(response: AxiosResponse<T>): T {
+          return response.data;
+        }
+      }
+      const testXmlResponseAdapter = new TestXmlResponseAdapter();
+
       const mockResponse: AxiosResponse<Book> = {
         data: "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>",
         status: 200,
@@ -64,7 +72,7 @@ describe("BookSearchApiClient", () => {
           headers: {} as AxiosHeaders,
         },
       };
-      const adaptedData = xmlResponseAdapter.adapt<Book>(mockResponse);
+      const adaptedData = testXmlResponseAdapter.adapt<Book>(mockResponse);
 
       expect(adaptedData).toEqual(
         "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"

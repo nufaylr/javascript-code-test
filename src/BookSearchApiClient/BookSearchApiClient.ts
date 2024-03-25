@@ -6,6 +6,7 @@ import { ApiResponseAdapter } from "./ApiResponseAdapter";
  * The createBookSearchApiClient function creates an instance of the BookSearchApiClient.
  * @param schema The Zod schema to validate the response data against.
  * @param axiosInstance An instance of Axios to make HTTP requests.
+ * @param responseAdapter An optional adapter to transform the response data.
  */
 function createBookSearchApiClient(
   schema: ZodSchema,
@@ -36,7 +37,7 @@ function createBookSearchApiClient(
   }
 
   function validateData<BookType>(data: BookType[]): BookType[] {
-    const validationResult = schema.array().safeParse(data);
+    const validationResult = schema.safeParse(data);
     if (!validationResult.success) {
       throw new Error(
         `Schema validation failed with ${validationResult.error}`
