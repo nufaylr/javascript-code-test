@@ -7,7 +7,8 @@ import {
 } from "./BookSearchApiClient";
 
 /**
- * ==== Example 1 : Fetch books by author rest api ====
+ * ==== EXAMPLE 1 : Fetch books by author REST API response ====
+ *
  * */
 
 // Define the schema for the book data
@@ -43,13 +44,14 @@ async function fetchBooksByAuthor() {
   const booksByAuthor = await bookSearchApiClient.getBooksByAuthor<Book>(
     authorSearchQuery
   );
-  console.log("resp api output:", booksByAuthor);
+  console.log("API output with json:", booksByAuthor);
 }
 
 fetchBooksByAuthor();
 
 /**
- * ==== Example 2 : Fetch books by author api response with xml payload ====
+ *
+ * ==== EXAMPLE 2 : Fetch books by author api response with xml payload ====
  * */
 
 // Define the schema for the book data
@@ -87,7 +89,7 @@ async function fetchFromXmlBooksByAuthor() {
   const booksByAuthor = await bookSearchXmlApiClient.getBooksByAuthor<xmlBook>(
     authorLeacyApiSearchQuery
   );
-  console.log("xml api output:", booksByAuthor);
+  console.log("API output with XML:", booksByAuthor);
 }
 
 fetchFromXmlBooksByAuthor();
