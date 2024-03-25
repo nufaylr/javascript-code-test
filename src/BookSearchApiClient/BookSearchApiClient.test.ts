@@ -78,5 +78,34 @@ describe("BookSearchApiClient", () => {
         "<book><id>1</id><title>Test Book</title><author>Test Author</author><isbn>1234567890</isbn><price>10.99</price></book>"
       );
     });
+
+    it("should adapt the response when responseAdapter is provided", async () => {
+      class TestXmlResponseAdapter extends ApiResponseAdapter {
+        adapt<T>(response: AxiosResponse<T>): T {
+          return response.data;
+        }
+      }
+      const testResponseAdapter = new TestXmlResponseAdapter();
+      const mockResponse: AxiosResponse<Book> = {
+        data: [],
+        status: 200,
+        statusText: "OK",
+        headers: {} as AxiosHeaders,
+        config: {
+          headers: {} as AxiosHeaders,
+        },
+      };
+
+      mockedAxios.get.mockResolvedValue(mockResponse);
+      const createBookInstance = createBookSearchApiClient(
+        z.any(),
+        mockedAxios,
+        testResponseAdapter
+      );
+
+      const data = await createBookInstance.getBooksByAuthor("test");
+
+      expect(data).toEqual(mockResponse.data);
+    });
   });
 });
